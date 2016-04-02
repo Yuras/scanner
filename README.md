@@ -14,3 +14,7 @@ then attoparsec.
 As an example, please checkout redis protocol parser included into the
 repo, both using attoparsec and scanner libraries:
 https://github.com/Yuras/scanner/tree/master/examples/Redis
+
+Benchmark results:
+
+![Bechmark results](https://raw.githubusercontent.com/Yuras/scanner/master/bench/bench.png)
