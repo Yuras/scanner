@@ -22,3 +22,6 @@ https://github.com/Yuras/scanner/tree/master/examples/Redis
 Benchmark results:
 
 ![Bechmark results](https://raw.githubusercontent.com/Yuras/scanner/master/bench/bench.png)
+
+But if you really really really need backtracking, then you can just
+inject attoparsec parser into a scanner: http://hackage.haskell.org/package/scanner-attoparsec
