@@ -10,7 +10,7 @@ copyright:           (c) Yuras Shumovich 2016
 category:            Parsing
 build-type:          Simple
 cabal-version:       >=1.10
-extra-source-files:  README.md bench/bench.png
+extra-source-files:  README.md changelog.md bench/bench.png
 description:         Parser combinator library designed to be fast. It doesn't
                      support backtracking.
 
