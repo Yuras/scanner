@@ -10,6 +10,7 @@ copyright:           (c) Yuras Shumovich 2016
 category:            Parsing
 build-type:          Simple
 cabal-version:       >=1.10
+extra-source-files:  README.md bench/bench.png
 description:         Parser combinator library designed to be fast. It doesn't
                      support backtracking.
 
@@ -23,6 +24,7 @@ library
   build-depends:       base <5
                      , bytestring
   hs-source-dirs:      lib
+  ghc-options:         -O2
   default-language:    Haskell2010
 
 test-suite spec
