@@ -1,0 +1,33 @@
+name:                scanner
+version:             0.1
+synopsis:            Fast non-backtracking incremental combinator parsing for bytestrings
+-- description:         
+homepage:            https://github.com/Yuras/scanner
+license:             BSD3
+license-file:        LICENSE
+author:              Yuras Shumovich
+maintainer:          shumovichy@gmail.com
+copyright:           (c) Yuras Shumovich 2016
+category:            Parsing
+build-type:          Simple
+-- extra-source-files:  
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     Scanner
+                       Scanner.Internal
+  -- other-modules:       
+  -- other-extensions:    
+  build-depends:       base <5
+                     , bytestring
+  hs-source-dirs:      lib
+  default-language:    Haskell2010
+
+test-suite spec
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      spec
+  main-is:             spec.hs
+  build-depends:       base
+                     , bytestring
+                     , hspec
+                     , scanner
