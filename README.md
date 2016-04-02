@@ -12,7 +12,7 @@ backtracking.
 Often (actually always, but it could be too hard sometimes) you can
 implement your parser without any backtracking. It that case all the
 bookkeeping usuall parser combinators do becomes unnecessary. The
-scanner libarary is designed for such cases. It is often 2 times faster
+scanner library is designed for such cases. It is often 2 times faster
 then attoparsec.
 
 As an example, please checkout redis protocol parser included into the
