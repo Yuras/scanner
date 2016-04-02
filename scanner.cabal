@@ -21,15 +21,17 @@ source-repository head
 library
   exposed-modules:     Scanner
                        Scanner.Internal
+  other-modules:       Prelude
+                       Data.Either
   build-depends:       base <5
                      , bytestring
-  hs-source-dirs:      lib
+  hs-source-dirs:      lib, compat
   ghc-options:         -O2
   default-language:    Haskell2010
 
 test-suite spec
   type:                exitcode-stdio-1.0
-  hs-source-dirs:      spec
+  hs-source-dirs:      spec, compat
   main-is:             spec.hs
   build-depends:       base
                      , bytestring
@@ -39,7 +41,7 @@ test-suite spec
 
 benchmark bench
   type:                exitcode-stdio-1.0
-  hs-source-dirs:      bench, examples
+  hs-source-dirs:      bench, examples, compat
   main-is:             bench.hs
   other-modules:       Redis.Reply
                        Redis.Atto

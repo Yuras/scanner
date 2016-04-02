@@ -1,6 +1,8 @@
 # scanner
 Fast non-backtracking incremental combinator parsing for bytestrings
 
+[![Build Status](https://travis-ci.org/Yuras/scanner.svg?branch=master)](https://travis-ci.org/Yuras/scanner)
+
 It is often convinient to use backtracking to parse some sofisticated
 input. Unfortunately it kills performance, so usually you should avoid
 backtracking.
