@@ -63,6 +63,10 @@ instance Monad Scanner where
     run s1 bs $ \bs' a ->
       run (s2 a) bs' next
 
+  {-# INLINE  fail #-}
+  fail err = Scanner $ \bs _ ->
+    Fail bs err
+
 -- | Consume the next word
 --
 -- It fails if end of input
