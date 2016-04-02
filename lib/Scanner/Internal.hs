@@ -13,7 +13,7 @@ import qualified Data.ByteString as ByteString
 import Control.Monad
 
 -- | CPS scanner without backtracking
-data Scanner a = Scanner
+newtype Scanner a = Scanner
   { run :: forall r. ByteString -> Next a r -> Result r
   }
 
