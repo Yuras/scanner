@@ -5,7 +5,7 @@ Fast non-backtracking incremental combinator parsing for bytestrings
 
 On hackage: http://hackage.haskell.org/package/scanner
 
-It is often convinient to use backtracking to parse some sofisticated
+It is often convinient to use backtracking to parse some sophisticated
 input. Unfortunately it kills performance, so usually you should avoid
 backtracking.
 
