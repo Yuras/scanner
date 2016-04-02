@@ -139,6 +139,9 @@ endOfInput = Scanner $ \bs next ->
     else next bs False
 
 -- | Consume the specified string
+--
+-- Warning: it is not optimized yet, so for for small string it is better
+-- to consume it byte-by-byte using `Scanner.word8`
 {-# INLINE string #-}
 string :: ByteString -> Scanner ()
 string str = Scanner $ \bs next ->
