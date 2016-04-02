@@ -14,6 +14,7 @@ import qualified Redis.Scanner
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as ByteString
 import qualified Data.Attoparsec.ByteString as Atto
+import qualified Data.Serialize.Get as Cereal
 
 import Criterion
 import Criterion.Main
@@ -25,6 +26,7 @@ main = do
       intInput = ":123\r\n"
       bulkInput = "$10\r\n0123456789\r\n"
       multiInput = "*3\r\n+A\r\n+B\r\n+C\r\n"
+      binaryInput = ByteString.pack [5, 65, 66, 67, 68, 69]
   print (redisByteStringReply smallStringInput)
   print (redisAttoReply smallStringInput)
   print (redisScannerReply smallStringInput)
@@ -61,6 +63,11 @@ main = do
       [ bench "Atto" $ whnf redisAttoReply multiInput
       , bench "Scanner" $ whnf redisScannerReply multiInput
       ]
+
+    , bgroup "cereal"
+      [ bench "Scanner" $ whnf binaryScanner binaryInput
+      , bench "Cereal" $ whnf binaryCereal binaryInput
+      ]
     ]
 
 {-# NOINLINE redisAttoReply #-}
@@ -93,3 +100,20 @@ redisByteStringReply bs = case ByteString.uncons bs of
             Nothing -> Left "Not enought input"
     _ -> Left "Unknown type"
   Nothing -> Left "Not enought input"
+
+binaryScanner :: ByteString -> Either String ByteString
+binaryScanner bs = case Scanner.scan p bs of
+  Scanner.Done _ r -> Right r
+  Scanner.Fail _ err -> Left err
+  Scanner.More _ -> Left "Not enought input"
+  where
+  p = do
+    n <- fromIntegral <$> Scanner.anyWord8
+    Scanner.take n
+
+binaryCereal :: ByteString -> Either String ByteString
+binaryCereal bs = Cereal.runGet g bs
+  where
+  g = do
+    n <- fromIntegral <$> Cereal.getWord8
+    Cereal.getByteString n
