@@ -1,5 +1,5 @@
 name:                scanner
-version:             0.1
+version:             0.2
 synopsis:            Fast non-backtracking incremental combinator parsing for bytestrings
 homepage:            https://github.com/Yuras/scanner
 license:             BSD3
