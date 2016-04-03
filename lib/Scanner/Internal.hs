@@ -6,10 +6,11 @@
 module Scanner.Internal
 where
 
-import Prelude hiding (takeWhile)
+import Prelude hiding (take, takeWhile)
 import Data.Word
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as ByteString
+import qualified Data.ByteString.Unsafe as ByteString (unsafeDrop)
 import Control.Monad
 
 -- | CPS scanner without backtracking
@@ -145,13 +146,16 @@ endOfInput = Scanner $ \bs next ->
 {-# INLINE string #-}
 string :: ByteString -> Scanner ()
 string str = Scanner $ \bs next ->
-  let bsL = ByteString.length bs
-      strL = ByteString.length str
+  let strL = ByteString.length str
   in if ByteString.isPrefixOf str bs
-    then next (ByteString.drop strL bs) ()
-    else if ByteString.isPrefixOf bs str
-      then More $ \bs' -> run (string (ByteString.drop bsL str)) bs' next
-      else Fail bs "unexpected input"
+    then next (ByteString.unsafeDrop strL bs) ()
+    else run slowPath bs next
+  where
+  slowPath = do
+    bs <- take (ByteString.length str)
+    if bs == str
+      then return ()
+      else fail "Unexpected input"
 
 -- | Return the next byte, if any, without consuming it
 {-# INLINE lookAhead #-}

@@ -1,6 +1,7 @@
 unreleased
 
 * make Scanner a newtype instead of data, see https://github.com/Yuras/scanner/pull/3
+* improve `string` performance
 
 0.1
 

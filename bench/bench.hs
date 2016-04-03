@@ -27,6 +27,9 @@ main = do
       bulkInput = "$10\r\n0123456789\r\n"
       multiInput = "*3\r\n+A\r\n+B\r\n+C\r\n"
       binaryInput = ByteString.pack [5, 65, 66, 67, 68, 69]
+  print (stringAtto smallStringInput)
+  print (stringScanner smallStringInput)
+  print (stringWordScanner smallStringInput)
   print (redisByteStringReply smallStringInput)
   print (redisAttoReply smallStringInput)
   print (redisScannerReply smallStringInput)
@@ -37,7 +40,13 @@ main = do
   print (redisAttoReply multiInput)
   print (redisScannerReply multiInput)
   defaultMain
-    [ bgroup "small string"
+    [ bgroup "string"
+      [ bench "Atto" $ whnf stringAtto smallStringInput
+      , bench "Scanner" $ whnf stringScanner smallStringInput
+      , bench "WordScanner" $ whnf stringWordScanner smallStringInput
+      ]
+
+    , bgroup "small string"
       [ bench "Atto" $ whnf redisAttoReply smallStringInput
       , bench "Scanner" $ whnf redisScannerReply smallStringInput
       , bench "ByteString" $ whnf redisByteStringReply smallStringInput
@@ -69,6 +78,34 @@ main = do
       , bench "Cereal" $ whnf binaryCereal binaryInput
       ]
     ]
+
+{-# NOINLINE stringAtto #-}
+stringAtto :: ByteString -> Either String ()
+stringAtto bs = case Atto.parse (Atto.string "+OK\r\n") bs of
+  Atto.Done _ _ -> Right ()
+  Atto.Fail _ _ err -> Left err
+  Atto.Partial _ -> Left "Not enough input"
+
+{-# NOINLINE stringScanner #-}
+stringScanner :: ByteString -> Either String ()
+stringScanner bs = case Scanner.scan (Scanner.string "+OK\r\n") bs of
+  Scanner.Done _ _ -> Right ()
+  Scanner.Fail _ err -> Left err
+  Scanner.More _ -> Left "Not enought input"
+
+{-# NOINLINE stringWordScanner #-}
+stringWordScanner :: ByteString -> Either String ()
+stringWordScanner bs = case Scanner.scan s bs of
+  Scanner.Done _ _ -> Right ()
+  Scanner.Fail _ err -> Left err
+  Scanner.More _ -> Left "Not enought input"
+  where
+  s = do
+    Scanner.char8 '+'
+    Scanner.char8 'O'
+    Scanner.char8 'K'
+    Scanner.char8 '\r'
+    Scanner.char8 '\n'
 
 {-# NOINLINE redisAttoReply #-}
 redisAttoReply :: ByteString -> Either String Redis.Reply
