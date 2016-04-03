@@ -40,42 +40,45 @@ main = do
   print (redisAttoReply multiInput)
   print (redisScannerReply multiInput)
   defaultMain
-    [ bgroup "string"
-      [ bench "Atto" $ whnf stringAtto smallStringInput
-      , bench "Scanner" $ whnf stringScanner smallStringInput
-      , bench "WordScanner" $ whnf stringWordScanner smallStringInput
+    [ bgroup "scanner"
+      [ bgroup "string"
+        [ bench "Atto" $ whnf stringAtto smallStringInput
+        , bench "Scanner" $ whnf stringScanner smallStringInput
+        , bench "WordScanner" $ whnf stringWordScanner smallStringInput
+        ]
       ]
 
-    , bgroup "small string"
-      [ bench "Atto" $ whnf redisAttoReply smallStringInput
-      , bench "Scanner" $ whnf redisScannerReply smallStringInput
-      , bench "ByteString" $ whnf redisByteStringReply smallStringInput
-      ]
+    , bgroup "redis"
+      [ bgroup "small string"
+        [ bench "Atto" $ whnf redisAttoReply smallStringInput
+        , bench "Scanner" $ whnf redisScannerReply smallStringInput
+        , bench "ByteString" $ whnf redisByteStringReply smallStringInput
+        ]
+      , bgroup "long string"
+        [ bench "Atto" $ whnf redisAttoReply longStringInput
+        , bench "Scanner" $ whnf redisScannerReply longStringInput
+        , bench "ByteString" $ whnf redisByteStringReply longStringInput
+        ]
 
-    , bgroup "long string"
-      [ bench "Atto" $ whnf redisAttoReply longStringInput
-      , bench "Scanner" $ whnf redisScannerReply longStringInput
-      , bench "ByteString" $ whnf redisByteStringReply longStringInput
-      ]
+      , bgroup "integer"
+        [ bench "Atto" $ whnf redisAttoReply intInput
+        , bench "Scanner" $ whnf redisScannerReply intInput
+        ]
 
-    , bgroup "integer"
-      [ bench "Atto" $ whnf redisAttoReply intInput
-      , bench "Scanner" $ whnf redisScannerReply intInput
-      ]
+      , bgroup "bulk"
+        [ bench "Atto" $ whnf redisAttoReply bulkInput
+        , bench "Scanner" $ whnf redisScannerReply bulkInput
+        ]
 
-    , bgroup "bulk"
-      [ bench "Atto" $ whnf redisAttoReply bulkInput
-      , bench "Scanner" $ whnf redisScannerReply bulkInput
-      ]
-
-    , bgroup "multi"
-      [ bench "Atto" $ whnf redisAttoReply multiInput
-      , bench "Scanner" $ whnf redisScannerReply multiInput
+      , bgroup "multi"
+        [ bench "Atto" $ whnf redisAttoReply multiInput
+        , bench "Scanner" $ whnf redisScannerReply multiInput
+        ]
       ]
 
     , bgroup "cereal"
-      [ bench "Scanner" $ whnf binaryScanner binaryInput
-      , bench "Cereal" $ whnf binaryCereal binaryInput
+      [ bench "Cereal" $ whnf binaryCereal binaryInput
+      , bench "Scanner" $ whnf binaryScanner binaryInput
       ]
     ]
 
