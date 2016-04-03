@@ -20,6 +20,7 @@ main = hspec $ do
   takeSpec
   takeWhileSpec
   lookAheadSpec
+  scanWithSpec
 
 anyWord8Spec :: Spec
 anyWord8Spec = describe "anyWord8" $ do
@@ -129,3 +130,17 @@ lookAheadSpec = describe "lookAhead" $ do
           , ByteString.pack [43]
           ]
     scanLazy (anyWord8 *> lookAhead) bs `shouldBe` Right (Just 43)
+
+scanWithSpec :: Spec
+scanWithSpec = describe "scanWith" $ do
+  it "should apply the scanner" $ do
+    let bs = ByteString.pack [42, 43]
+    let Just (Scanner.Done _ r) = scanWith (Just ByteString.empty) anyWord8 bs
+    r `shouldBe` 42
+
+  it "should resupply scanner when necessary" $ do
+    let bs = "a"
+        p = Scanner.anyChar8 *> Scanner.anyChar8
+
+    let Just (Scanner.Done _ r) = scanWith (Just "b") p bs
+    r `shouldBe` 'b'

@@ -14,6 +14,7 @@ module Scanner
 , scan
 , scanOnly
 , scanLazy
+, scanWith
 , anyWord8
 , anyChar8
 , word8
@@ -62,6 +63,16 @@ scanLazy s lbs = go (scan s) (Lazy.ByteString.toChunks lbs)
       Done _ r -> Right r
       Fail _ err -> Left err
       More more' -> go more' chunks'
+
+-- | Scan with the provided resupply action
+scanWith :: Monad m => m ByteString -> Scanner a -> ByteString -> m (Result a)
+scanWith more s input = go input (scan s)
+  where
+  go bs next = case next bs of
+    More next' -> do
+      bs' <- more
+      go bs' next'
+    res -> return res
 
 -- | Consume the next 8-bit char
 --
