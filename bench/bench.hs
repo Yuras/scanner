@@ -9,11 +9,13 @@ import qualified Scanner
 
 import qualified Redis.Reply as Redis
 import qualified Redis.Atto
+import qualified Redis.Zepto
 import qualified Redis.Scanner
 
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as ByteString
 import qualified Data.Attoparsec.ByteString as Atto
+import qualified Data.Attoparsec.Zepto as Zepto
 import qualified Data.Serialize.Get as Cereal
 
 import Criterion
@@ -32,12 +34,16 @@ main = do
   print (stringWordScanner smallStringInput)
   print (redisByteStringReply smallStringInput)
   print (redisAttoReply smallStringInput)
+  print (redisZeptoReply smallStringInput)
   print (redisScannerReply smallStringInput)
   print (redisAttoReply intInput)
+  print (redisZeptoReply intInput)
   print (redisScannerReply intInput)
   print (redisAttoReply bulkInput)
+  print (redisZeptoReply bulkInput)
   print (redisScannerReply bulkInput)
   print (redisAttoReply multiInput)
+  print (redisZeptoReply multiInput)
   print (redisScannerReply multiInput)
   defaultMain
     [ bgroup "scanner"
@@ -51,27 +57,32 @@ main = do
     , bgroup "redis"
       [ bgroup "small string"
         [ bench "Atto" $ whnf redisAttoReply smallStringInput
+        , bench "Zepto" $ whnf redisZeptoReply smallStringInput
         , bench "Scanner" $ whnf redisScannerReply smallStringInput
         , bench "ByteString" $ whnf redisByteStringReply smallStringInput
         ]
       , bgroup "long string"
         [ bench "Atto" $ whnf redisAttoReply longStringInput
+        , bench "Zepto" $ whnf redisZeptoReply longStringInput
         , bench "Scanner" $ whnf redisScannerReply longStringInput
         , bench "ByteString" $ whnf redisByteStringReply longStringInput
         ]
 
       , bgroup "integer"
         [ bench "Atto" $ whnf redisAttoReply intInput
+        , bench "Zepto" $ whnf redisZeptoReply intInput
         , bench "Scanner" $ whnf redisScannerReply intInput
         ]
 
       , bgroup "bulk"
         [ bench "Atto" $ whnf redisAttoReply bulkInput
+        , bench "Zepto" $ whnf redisZeptoReply bulkInput
         , bench "Scanner" $ whnf redisScannerReply bulkInput
         ]
 
       , bgroup "multi"
         [ bench "Atto" $ whnf redisAttoReply multiInput
+        , bench "Zepto" $ whnf redisZeptoReply multiInput
         , bench "Scanner" $ whnf redisScannerReply multiInput
         ]
       ]
@@ -116,6 +127,10 @@ redisAttoReply bs = case Atto.parse Redis.Atto.reply bs of
   Atto.Done _ r -> Right r
   Atto.Fail _ _ err -> Left err
   Atto.Partial _ -> Left "Not enough input"
+
+{-# NOINLINE redisZeptoReply #-}
+redisZeptoReply :: ByteString -> Either String Redis.Reply
+redisZeptoReply = Zepto.parse Redis.Zepto.reply
 
 {-# NOINLINE redisScannerReply #-}
 redisScannerReply :: ByteString -> Either String Redis.Reply
