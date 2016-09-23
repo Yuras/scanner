@@ -171,4 +171,4 @@ binaryCereal bs = Cereal.runGet g bs
   where
   g = do
     n <- fromIntegral <$> Cereal.getWord8
-    Cereal.getByteString n
+    Cereal.getBytes n
