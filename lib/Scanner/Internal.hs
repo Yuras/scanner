@@ -171,6 +171,7 @@ lookAhead = Scanner $ \bs next ->
       Just (c, _) -> next bs (Just c)
       _ -> next ByteString.empty Nothing
 
+{-| Fold over the octets, which satisfy the predicate -}
 {-# INLINE foldlWhile #-}
 foldlWhile :: (Word8 -> Bool) -> (a -> Word8 -> a) -> a -> Scanner a
 foldlWhile p step init = Scanner $ \ bs next -> let
@@ -195,12 +196,14 @@ foldlWhile p step init = Scanner $ \ bs next -> let
       let (l, r) = ByteString.span p bs
       in next r l
 
+{-| Fold over the octets, which satisfy the predicate, ensuring that there's at least one -}
 {-# INLINE foldlWhile1 #-}
 foldlWhile1 :: (Word8 -> Bool) -> (a -> Word8 -> a) -> a -> Scanner a
 foldlWhile1 predicate step init = do
   head <- satisfy predicate
   foldlWhile predicate step (step init head)
 
+{-| Consume a single octet which satisfies the predicate and fail if it does not -}
 {-# INLINE satisfy #-}
 satisfy :: (Word8 -> Bool) -> Scanner Word8
 satisfy predicate = Scanner $ \ chunk next -> case ByteString.uncons chunk of
@@ -216,6 +219,7 @@ satisfy predicate = Scanner $ \ chunk next -> case ByteString.uncons chunk of
         else next remainder word8
       else Fail chunk "Octet doesn't satisfy the predicate"
 
+{-| Consume a single octet in case it satisfies the predicate -}
 {-# INLINE satisfyMaybe #-}
 satisfyMaybe :: (Word8 -> Bool) -> Scanner (Maybe Word8)
 satisfyMaybe predicate = Scanner $ \ chunk next -> case ByteString.uncons chunk of
@@ -231,6 +235,7 @@ satisfyMaybe predicate = Scanner $ \ chunk next -> case ByteString.uncons chunk 
         else next remainder (Just word8)
       else next chunk Nothing
 
+{-| Parse a non-negative decimal number in ASCII -}
 {-# INLINE decimal #-}
 decimal :: Integral n => Scanner n
 decimal = foldlWhile1 OctetPredicates.isDigit step 0 where
