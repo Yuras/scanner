@@ -23,6 +23,7 @@ library
                        Scanner.Internal
   other-modules:       Prelude
                        Data.Either
+                       Scanner.OctetPredicates
   build-depends:       base <5
                      , bytestring
   hs-source-dirs:      lib, compat
