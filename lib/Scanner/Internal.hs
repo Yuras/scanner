@@ -230,3 +230,8 @@ satisfyMaybe predicate = Scanner $ \ chunk next -> case ByteString.uncons chunk 
         then More $ \ chunk -> next chunk (Just word8)
         else next remainder (Just word8)
       else next chunk Nothing
+
+{-# INLINE decimal #-}
+decimal :: Integral n => Scanner n
+decimal = foldlWhile1 OctetPredicates.isDigit step 0 where
+  step a w = a * 10 + fromIntegral (w - 48)

@@ -31,6 +31,7 @@ module Scanner
 , foldlWhile1
 , satisfy
 , satisfyMaybe
+, decimal
 )
 where
 
