@@ -27,6 +27,11 @@ module Scanner
 , skipSpace
 , lookAhead
 , lookAheadChar8
+, foldlWhile
+, foldlWhile1
+, satisfy
+, satisfyMaybe
+, decimal
 )
 where
 

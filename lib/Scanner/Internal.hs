@@ -1,4 +1,4 @@
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RankNTypes, BangPatterns #-}
 {-# OPTIONS_HADDOCK not-home #-}
 
 -- | Scanner implementation
@@ -11,6 +11,7 @@ import Data.Word
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as ByteString
 import qualified Data.ByteString.Unsafe as ByteString (unsafeDrop)
+import qualified Scanner.OctetPredicates as OctetPredicates
 import Control.Monad
 
 -- | CPS scanner without backtracking
@@ -169,3 +170,73 @@ lookAhead = Scanner $ \bs next ->
     case ByteString.uncons bs of
       Just (c, _) -> next bs (Just c)
       _ -> next ByteString.empty Nothing
+
+{-| Fold over the octets, which satisfy the predicate -}
+{-# INLINE foldlWhile #-}
+foldlWhile :: (Word8 -> Bool) -> (a -> Word8 -> a) -> a -> Scanner a
+foldlWhile p step init = Scanner $ \ bs next -> let
+  (l, r) = ByteString.span p bs
+  state = ByteString.foldl' step init l
+  in if ByteString.null r
+    then More $ \ bs -> if ByteString.null bs
+      then next ByteString.empty state
+      else run (loop state) bs next
+    else next r state
+  where
+    loop state = do
+      chunk <- takeChunk state
+      if ByteString.null chunk
+        then return state
+        else do
+          done <- endOfInput
+          if done
+            then return state
+            else loop (ByteString.foldl' step state chunk)
+    takeChunk state = Scanner $ \ bs next ->
+      let (l, r) = ByteString.span p bs
+      in next r l
+
+{-| Fold over the octets, which satisfy the predicate, ensuring that there's at least one -}
+{-# INLINE foldlWhile1 #-}
+foldlWhile1 :: (Word8 -> Bool) -> (a -> Word8 -> a) -> a -> Scanner a
+foldlWhile1 predicate step init = do
+  head <- satisfy predicate
+  foldlWhile predicate step (step init head)
+
+{-| Consume a single octet which satisfies the predicate and fail if it does not -}
+{-# INLINE satisfy #-}
+satisfy :: (Word8 -> Bool) -> Scanner Word8
+satisfy predicate = Scanner $ \ chunk next -> case ByteString.uncons chunk of
+  Just (word8, remainder) -> handleHeadAndTail word8 remainder next chunk
+  Nothing -> More $ \ chunk -> case ByteString.uncons chunk of
+    Just (word8, remainder) -> handleHeadAndTail word8 remainder next chunk
+    Nothing -> Fail chunk "No more input"
+  where
+    handleHeadAndTail :: Word8 -> ByteString -> (ByteString -> Word8 -> Result r) -> ByteString -> Result r
+    handleHeadAndTail word8 remainder next chunk = if predicate word8
+      then if ByteString.null remainder
+        then More $ \ chunk -> next chunk word8
+        else next remainder word8
+      else Fail chunk "Octet doesn't satisfy the predicate"
+
+{-| Consume a single octet in case it satisfies the predicate -}
+{-# INLINE satisfyMaybe #-}
+satisfyMaybe :: (Word8 -> Bool) -> Scanner (Maybe Word8)
+satisfyMaybe predicate = Scanner $ \ chunk next -> case ByteString.uncons chunk of
+  Just (word8, remainder) -> handleHeadAndTail word8 remainder next chunk
+  Nothing -> More $ \ chunk -> case ByteString.uncons chunk of
+    Just (word8, remainder) -> handleHeadAndTail word8 remainder next chunk
+    Nothing -> next ByteString.empty Nothing
+  where
+    handleHeadAndTail :: Word8 -> ByteString -> (ByteString -> Maybe Word8 -> Result r) -> ByteString -> Result r
+    handleHeadAndTail word8 remainder next chunk = if predicate word8
+      then if ByteString.null remainder
+        then More $ \ chunk -> next chunk (Just word8)
+        else next remainder (Just word8)
+      else next chunk Nothing
+
+{-| Parse a non-negative decimal number in ASCII -}
+{-# INLINE decimal #-}
+decimal :: Integral n => Scanner n
+decimal = foldlWhile1 OctetPredicates.isDigit step 0 where
+  step a w = a * 10 + fromIntegral (w - 48)
