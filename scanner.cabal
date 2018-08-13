@@ -38,6 +38,8 @@ test-suite spec
                      , bytestring
                      , hspec
                      , scanner
+  other-modules:       Prelude
+                       Data.Either
   default-language:    Haskell2010
 
 benchmark bench
