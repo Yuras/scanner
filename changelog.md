@@ -1,3 +1,6 @@
+0.3
+
+* add foldWhile, foldWhile1, satisfy, satisfyMaybe
 
 0.2
 
