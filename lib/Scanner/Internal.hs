@@ -13,6 +13,7 @@ import qualified Data.ByteString as ByteString
 import qualified Data.ByteString.Unsafe as ByteString (unsafeDrop)
 import qualified Scanner.OctetPredicates as OctetPredicates
 import Control.Monad
+import Control.Monad.Fail
 
 -- | CPS scanner without backtracking
 newtype Scanner a = Scanner
@@ -65,6 +66,11 @@ instance Monad Scanner where
     run s1 bs $ \bs' a ->
       run (s2 a) bs' next
 
+  {-# INLINE  fail #-}
+  fail err = Scanner $ \bs _ ->
+    Fail bs err
+
+instance MonadFail Scanner where
   {-# INLINE  fail #-}
   fail err = Scanner $ \bs _ ->
     Fail bs err
@@ -156,7 +162,7 @@ string str = Scanner $ \bs next ->
     bs <- take (ByteString.length str)
     if bs == str
       then return ()
-      else fail "Unexpected input"
+      else Control.Monad.Fail.fail "Unexpected input"
 
 -- | Return the next byte, if any, without consuming it
 {-# INLINE lookAhead #-}
