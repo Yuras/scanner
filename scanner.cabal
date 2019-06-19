@@ -25,6 +25,7 @@ library
                        Data.Either
                        Scanner.OctetPredicates
   build-depends:       base <5
+                     , fail
                      , bytestring
   hs-source-dirs:      lib, compat
   ghc-options:         -O2
