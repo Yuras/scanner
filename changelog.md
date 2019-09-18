@@ -1,3 +1,7 @@
+0.3.1
+
+* support ghc-8.8
+
 0.3
 
 * add foldWhile, foldWhile1, satisfy, satisfyMaybe
