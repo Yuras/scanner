@@ -8,3 +8,7 @@ ghc:
   - '8.4'
   - '8.6'
   - '8.8'
+cache:
+  directories:
+    - $HOME/.ghc
+    - $HOME/.cabal
