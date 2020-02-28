@@ -21,6 +21,7 @@ main = hspec $ do
   takeWhileSpec
   lookAheadSpec
   scanWithSpec
+  errorSpec
 
 anyWord8Spec :: Spec
 anyWord8Spec = describe "anyWord8" $ do
@@ -144,3 +145,27 @@ scanWithSpec = describe "scanWith" $ do
 
     let Just (Scanner.Done _ r) = scanWith (Just "b") p bs
     r `shouldBe` 'b'
+
+errorSpec :: Spec
+errorSpec = describe "<?>" $ do
+  it "attaches the message to the error message" $ do
+    let bs = "a"
+        p = satisfy (\w -> w == 98 || w == 99) <?> "expected b or c"
+    scanOnly p bs `shouldBe`
+      Left "Octet doesn't satisfy the predicate: expected b or c"
+
+  context "when input ends" $ do
+    it "still attaches the message to the error message" $ do
+      let bs = ""
+          p = satisfy (\w -> w == 98 || w == 99) <?> "expected b or c"
+      scanOnly p bs `shouldBe`
+        Left "No more input: expected b or c"
+
+  context "when input is given in chanks" $ do
+    it "still attaches the message to the error message" $ do
+      let bs = Lazy.ByteString.fromChunks [" ", " "]
+          p = do
+            skipSpace <?> "help"
+            satisfy (\w -> w == 98 || w == 99) <?> "expected b or c"
+            anyWord8 <?> "ha"
+      scanLazy p bs `shouldBe` Left "No more input: expected b or c"

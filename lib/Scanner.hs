@@ -15,6 +15,7 @@ module Scanner
 , scanOnly
 , scanLazy
 , scanWith
+, (<?>)
 , anyWord8
 , anyChar8
 , word8
