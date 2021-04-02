@@ -1,4 +1,5 @@
 language: haskell
+cabal: 3.4
 ghc:
   - '7.6'
   - '7.8'
@@ -8,7 +9,11 @@ ghc:
   - '8.4'
   - '8.6'
   - '8.8'
+  - '8.10'
+  - '9.0.1'
 cache:
   directories:
     - $HOME/.ghc
     - $HOME/.cabal
+install: cabal build --enable-tests --only-dependencies
+script: cabal test
