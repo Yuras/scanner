@@ -21,6 +21,7 @@ main = hspec $ do
   takeWhileSpec
   lookAheadSpec
   scanWithSpec
+  scanLazyWithLocationSpec
 
 anyWord8Spec :: Spec
 anyWord8Spec = describe "anyWord8" $ do
@@ -144,3 +145,14 @@ scanWithSpec = describe "scanWith" $ do
 
     let Just (Scanner.Done _ r) = scanWith (Just "b") p bs
     r `shouldBe` 'b'
+
+scanLazyWithLocationSpec :: Spec
+scanLazyWithLocationSpec = describe "scanLazyWithLocation" $ do
+  context "when fails" $ do
+    it "returns the error location" $ do
+      let bs = Lazy.ByteString.fromChunks ["a", "b", "c"]
+          p = do
+            char8 'a'
+            char8 'b'
+            char8 'd'
+      scanLazyWithLocation p bs `shouldBe` Left (3, "unexpected word")
