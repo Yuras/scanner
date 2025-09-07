@@ -23,6 +23,7 @@ library
                        Scanner.Internal
   other-modules:       Prelude
                        Data.Either
+                       Data.ByteString.Unsafe
                        Scanner.OctetPredicates
   build-depends:       base <5
                      , fail

@@ -87,6 +87,7 @@ anyWord8 = Scanner $ \bs next ->
     Just (c, bs') -> next bs' c
     _ -> More $ \bs' -> slowPath bs' next
   where
+  slowPath :: ByteString -> Next Word8 r -> Result r
   slowPath bs next =
     case ByteString.uncons bs of
       Just (c, bs') -> next bs' c
@@ -174,6 +175,7 @@ lookAhead = Scanner $ \bs next ->
     Just (c, _) -> next bs (Just c)
     _ -> More $ \bs' -> slowPath bs' next
   where
+  slowPath :: ByteString -> Next (Maybe Word8) r -> Result r
   slowPath bs next =
     case ByteString.uncons bs of
       Just (c, _) -> next bs (Just c)
