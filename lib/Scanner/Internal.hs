@@ -66,10 +66,12 @@ instance Monad Scanner where
     run s1 bs $ \bs' a ->
       run (s2 a) bs' next
 
+#ifndef __MHS__
 #if !(MIN_VERSION_base(4,13,0))
   {-# INLINE  fail #-}
   fail err = Scanner $ \bs _ ->
     Fail bs err
+#endif
 #endif
 
 instance MonadFail Scanner where
