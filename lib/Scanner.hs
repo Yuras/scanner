@@ -14,9 +14,7 @@ module Scanner
 , Result (..)
 , scan
 , scanOnly
-#ifndef __MHS__
 , scanLazy
-#endif
 , scanWith
 , anyWord8
 , anyChar8
@@ -45,10 +43,8 @@ import Data.Word
 import qualified Data.Char as Char
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as ByteString
-#ifndef __MHS__
-import qualified Data.ByteString.Lazy as Lazy (ByteString)
-import qualified Data.ByteString.Lazy as Lazy.ByteString
-#endif
+import qualified Data.ByteString.Lazy_ as Lazy (ByteString)
+import qualified Data.ByteString.Lazy_ as Lazy.ByteString
 import Control.Monad
 import GHC.Base (unsafeChr)
 
@@ -61,7 +57,6 @@ scanOnly s bs = go (scan s bs)
     Fail _ err -> Left err
     More more -> go (more ByteString.empty)
 
-#ifndef __MHS__
 -- | Scan lazy bytestring by resupplying scanner with chunks
 scanLazy :: Scanner a -> Lazy.ByteString -> Either String a
 scanLazy s lbs = go (scan s) (Lazy.ByteString.toChunks lbs)
@@ -74,7 +69,6 @@ scanLazy s lbs = go (scan s) (Lazy.ByteString.toChunks lbs)
       Done _ r -> Right r
       Fail _ err -> Left err
       More more' -> go more' chunks'
-#endif
 
 -- | Scan with the provided resupply action
 scanWith :: Monad m => m ByteString -> Scanner a -> ByteString -> m (Result a)

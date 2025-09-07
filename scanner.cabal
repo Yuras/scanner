@@ -24,6 +24,7 @@ library
   other-modules:       Prelude
                        Data.Either
                        Data.ByteString.Unsafe
+                       Data.ByteString.Lazy_
                        GHC.Base
                        Scanner.OctetPredicates
   build-depends:       base <5
@@ -43,6 +44,7 @@ test-suite spec
                      , scanner
   other-modules:       Prelude
                        Data.Either
+                       Data.ByteString.Lazy_
   default-language:    Haskell2010
 
 benchmark bench
