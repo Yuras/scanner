@@ -24,6 +24,7 @@ library
   other-modules:       Prelude
                        Data.Either
                        Data.ByteString.Unsafe
+                       GHC.Base
                        Scanner.OctetPredicates
   build-depends:       base <5
                      , fail

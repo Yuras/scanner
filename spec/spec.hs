@@ -11,9 +11,7 @@ import Scanner
 import Prelude hiding (take, takeWhile)
 import Data.Either
 import qualified Data.ByteString as ByteString
-#ifndef __MHS__
 import qualified Data.ByteString.Lazy as Lazy.ByteString
-#endif
 import Test.Hspec
 
 main :: IO ()

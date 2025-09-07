@@ -50,13 +50,7 @@ import qualified Data.ByteString.Lazy as Lazy (ByteString)
 import qualified Data.ByteString.Lazy as Lazy.ByteString
 #endif
 import Control.Monad
-
-#ifdef __MHS__
-unsafeChr :: Int -> Char
-unsafeChr = Char.chr
-#else
 import GHC.Base (unsafeChr)
-#endif
 
 -- | Scan the complete input, without resupplying
 scanOnly :: Scanner a -> ByteString -> Either String a
