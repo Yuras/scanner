@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE CPP #-}
 
 module Main
 ( main
@@ -10,7 +11,9 @@ import Scanner
 import Prelude hiding (take, takeWhile)
 import Data.Either
 import qualified Data.ByteString as ByteString
+#ifndef __MHS__
 import qualified Data.ByteString.Lazy as Lazy.ByteString
+#endif
 import Test.Hspec
 
 main :: IO ()
@@ -28,6 +31,7 @@ anyWord8Spec = describe "anyWord8" $ do
     let bs = ByteString.pack [42, 43]
     scanOnly anyWord8 bs `shouldBe` Right 42
 
+#ifndef __MHS__
   it "should consume the current byte" $ do
     let bs = ByteString.pack [42, 43]
     scanOnly (anyWord8 *> anyWord8) bs `shouldBe` Right 43
@@ -45,6 +49,7 @@ anyWord8Spec = describe "anyWord8" $ do
           , ByteString.pack [43]
           ]
     scanLazy (anyWord8 *> anyWord8) bs `shouldBe` Right 43
+#endif
 
   it "should fail on end of input" $ do
     let bs = ByteString.empty
@@ -56,12 +61,14 @@ stringSpec = describe "string" $ do
     let bs = "hello world"
     scanOnly (string "hello" *> anyWord8) bs `shouldBe` Right 32
 
+#ifndef __MHS__
   it "should ask for more input" $ do
     let bs = Lazy.ByteString.fromChunks
           [ "hel"
           , "lo"
           ]
     scanLazy (string "hello") bs `shouldBe` Right ()
+#endif
 
   it "should fail on wrong input" $ do
     let bs = "helo world"
@@ -73,6 +80,7 @@ takeSpec = describe "take" $ do
     let bs = "hello world"
     scanOnly (take 5) bs `shouldBe` Right "hello"
 
+#ifndef __MHS__
   it "should ask for more input" $ do
     let bs = Lazy.ByteString.fromChunks
           [ "he"
@@ -91,6 +99,7 @@ takeSpec = describe "take" $ do
           , "l"
           ]
     scanLazy (take 5) bs' `shouldSatisfy` isLeft
+#endif
 
 takeWhileSpec :: Spec
 takeWhileSpec = describe "takeWhile" $ do
@@ -98,6 +107,7 @@ takeWhileSpec = describe "takeWhile" $ do
     let bs = "hello world"
     scanOnly (takeWhile (/= 32)) bs `shouldBe` Right "hello"
 
+#ifndef __MHS__
   it "should ask for more input" $ do
     let bs = Lazy.ByteString.fromChunks
           [ "he"
@@ -105,6 +115,7 @@ takeWhileSpec = describe "takeWhile" $ do
           , "lo world"
           ]
     scanLazy (takeWhile (/= 32)) bs `shouldBe` Right "hello"
+#endif
 
   it "should return everything is predicate where becomes False" $ do
     let bs = "hello"
@@ -124,12 +135,14 @@ lookAheadSpec = describe "lookAhead" $ do
     let bs = ByteString.pack [42, 43]
     scanOnly (lookAhead *> anyWord8) bs `shouldBe` Right 42
 
+#ifndef __MHS__
   it "should ask for more input" $ do
     let bs = Lazy.ByteString.fromChunks
           [ ByteString.pack [42]
           , ByteString.pack [43]
           ]
     scanLazy (anyWord8 *> lookAhead) bs `shouldBe` Right (Just 43)
+#endif
 
 scanWithSpec :: Spec
 scanWithSpec = describe "scanWith" $ do
