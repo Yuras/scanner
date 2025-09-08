@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 
 -- | Fast not-backtracking incremental scanner for bytestrings
 --

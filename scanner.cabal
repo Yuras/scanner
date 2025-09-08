@@ -23,7 +23,6 @@ library
                        Scanner.Internal
   other-modules:       Prelude
                        Data.Either
-                       Data.ByteString.Unsafe
                        Data.ByteString.Lazy_
                        GHC.Base
                        Scanner.OctetPredicates
