@@ -42,8 +42,8 @@ import Data.Word
 import qualified Data.Char as Char
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as ByteString
-import qualified Data.ByteString.Lazy as Lazy (ByteString)
-import qualified Data.ByteString.Lazy as Lazy.ByteString
+import qualified Data.ByteString.Lazy_ as Lazy (ByteString)
+import qualified Data.ByteString.Lazy_ as Lazy.ByteString
 import Control.Monad
 import GHC.Base (unsafeChr)
 

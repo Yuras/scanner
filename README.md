@@ -27,3 +27,8 @@ Benchmark results:
 
 But if you really really really need backtracking, then you can just
 inject attoparsec parser into a scanner: http://hackage.haskell.org/package/scanner-attoparsec
+
+# MicroHs
+
+The library should compile and work with MicroHs.
+To run the test suite: `mhs -icompat -iportable_hspec -ilib -r spec/spec.hs`

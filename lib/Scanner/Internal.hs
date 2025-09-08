@@ -66,10 +66,12 @@ instance Monad Scanner where
     run s1 bs $ \bs' a ->
       run (s2 a) bs' next
 
+#ifndef __MHS__
 #if !(MIN_VERSION_base(4,13,0))
   {-# INLINE  fail #-}
   fail err = Scanner $ \bs _ ->
     Fail bs err
+#endif
 #endif
 
 instance MonadFail Scanner where
@@ -87,6 +89,7 @@ anyWord8 = Scanner $ \bs next ->
     Just (c, bs') -> next bs' c
     _ -> More $ \bs' -> slowPath bs' next
   where
+  slowPath :: ByteString -> Next Word8 r -> Result r
   slowPath bs next =
     case ByteString.uncons bs of
       Just (c, bs') -> next bs' c
@@ -174,6 +177,7 @@ lookAhead = Scanner $ \bs next ->
     Just (c, _) -> next bs (Just c)
     _ -> More $ \bs' -> slowPath bs' next
   where
+  slowPath :: ByteString -> Next (Maybe Word8) r -> Result r
   slowPath bs next =
     case ByteString.uncons bs of
       Just (c, _) -> next bs (Just c)

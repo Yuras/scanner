@@ -10,7 +10,7 @@ import Scanner
 import Prelude hiding (take, takeWhile)
 import Data.Either
 import qualified Data.ByteString as ByteString
-import qualified Data.ByteString.Lazy as Lazy.ByteString
+import qualified Data.ByteString.Lazy_ as Lazy.ByteString
 import Test.Hspec
 
 main :: IO ()
