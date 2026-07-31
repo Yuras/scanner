@@ -51,9 +51,6 @@ instance Applicative Scanner where
   {-# INLINE (<*>) #-}
   (<*>) = ap
 
-  {-# INLINE (*>) #-}
-  (*>) = (>>)
-
   {-# INLINE (<*) #-}
   s1 <* s2 = s1 >>= \a -> s2 >> return a
 
