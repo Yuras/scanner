@@ -1,3 +1,9 @@
+0.3.2
+
+* drop non-caninical definitions for Monad and Applicative, see
+https://github.com/Yuras/scanner/pull/15 and
+https://github.com/Yuras/scanner/pull/17
+
 0.3.1
 
 * support ghc-8.8
