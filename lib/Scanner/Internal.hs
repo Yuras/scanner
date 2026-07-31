@@ -46,7 +46,8 @@ instance Functor Scanner where
 
 instance Applicative Scanner where
   {-# INLINE pure #-}
-  pure = return
+  pure a = Scanner $ \bs next ->
+    next bs a
   {-# INLINE (<*>) #-}
   (<*>) = ap
 
@@ -57,10 +58,6 @@ instance Applicative Scanner where
   s1 <* s2 = s1 >>= \a -> s2 >> return a
 
 instance Monad Scanner where
-  {-# INLINE return #-}
-  return a = Scanner $ \bs next ->
-    next bs a
-
   {-# INLINE (>>=) #-}
   s1 >>= s2 = Scanner $ \bs next ->
     run s1 bs $ \bs' a ->
