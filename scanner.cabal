@@ -24,7 +24,7 @@ library
   other-modules:       Prelude
                        Data.Either
                        Scanner.OctetPredicates
-  build-depends:       base <5
+  build-depends:       base >=4.8 && <5
                      , fail
                      , bytestring
   hs-source-dirs:      lib, compat
