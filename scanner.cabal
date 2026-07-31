@@ -22,7 +22,6 @@ library
   exposed-modules:     Scanner
                        Scanner.Internal
   other-modules:       Prelude
-                       Data.Either
                        Scanner.OctetPredicates
   build-depends:       base >=4.8 && <5
                      , fail
@@ -40,7 +39,6 @@ test-suite spec
                      , hspec
                      , scanner
   other-modules:       Prelude
-                       Data.Either
   default-language:    Haskell2010
 
 benchmark bench
