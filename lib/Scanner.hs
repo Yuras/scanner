@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 
 -- | Fast not-backtracking incremental scanner for bytestrings
 --
@@ -14,6 +15,7 @@ module Scanner
 , scan
 , scanOnly
 , scanLazy
+, scanLazyWithLocation
 , scanWith
 , anyWord8
 , anyChar8
@@ -58,16 +60,26 @@ scanOnly s bs = go (scan s bs)
 
 -- | Scan lazy bytestring by resupplying scanner with chunks
 scanLazy :: Scanner a -> Lazy.ByteString -> Either String a
-scanLazy s lbs = go (scan s) (Lazy.ByteString.toChunks lbs)
+scanLazy s lbs = case scanLazyWithLocation s lbs of
+  Right a -> Right a
+  Left (_, err) -> Left err
+
+-- | Scan lazy bytestring by resupplying scanner with chunks
+--
+-- Unlike `scanLazy`, it returns the offset where the error occurred
+scanLazyWithLocation :: Scanner a -> Lazy.ByteString -> Either (Int, String) a
+scanLazyWithLocation s lbs = go 0 (scan s) (Lazy.ByteString.toChunks lbs)
   where
-  go more chunks =
+  go !pos more chunks =
     let (chunk, chunks') = case chunks of
           [] -> (ByteString.empty, [])
           (c:cs) -> (c, cs)
     in case more chunk of
       Done _ r -> Right r
-      Fail _ err -> Left err
-      More more' -> go more' chunks'
+      Fail rest err ->
+        let pos' = pos + ByteString.length chunk - ByteString.length rest
+        in Left (pos', err)
+      More more' -> go (pos + ByteString.length chunk) more' chunks'
 
 -- | Scan with the provided resupply action
 scanWith :: Monad m => m ByteString -> Scanner a -> ByteString -> m (Result a)
